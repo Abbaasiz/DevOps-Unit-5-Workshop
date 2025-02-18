@@ -1,26 +1,37 @@
 name: Continuous Integration
-on: [push]                      # Will make the workflow run every time you push to any branch
+
+on:
+  push:
+    branches:
+      - main  # Run workflow only when pushing to the main branch
+  pull_request:  # Also run the workflow when a PR is raised
 
 jobs:
-  build:
-    name: Build and test
-    runs-on: ubuntu-latest      # Sets the build environment a machine with the latest Ubuntu installed
+  build-dotnet:
+    name: Build and Test C#
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4 # Adds a step to checkout the repository code
-    - name: build and test C#
-      uses: actions/setup-dotnet@v4
-      with:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
           dotnet-version: 8.0.x
-    - name: Install dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build
-    - name: Install Typescript dependencies
-      run: cd DotnetTemplate.Web && npm install && npm run build
-    - name: Test with the dotnet CLI
-      run: dotnet test --no-build
-    - name: Test with Jasmine
-      run: cd DotnetTemplate.Web && npm t
-    - name: Lint TypeScript
-      working-directory: ./DotnetTemplate.Web
-      run: npm run lint
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build
+      - name: Test with the dotnet CLI
+        run: dotnet test --no-build
+
+  build-typescript:
+    name: Build and Test TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install TypeScript dependencies
+        run: cd DotnetTemplate.Web && npm install && npm run build
+      - name: Test with Jasmine
+        run: cd DotnetTemplate.Web && npm t
+      - name: Lint TypeScript
+        working-directory: ./DotnetTemplate.Web
+        run: npm run lint
