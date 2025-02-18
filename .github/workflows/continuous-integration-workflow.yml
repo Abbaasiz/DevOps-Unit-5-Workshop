@@ -18,8 +18,9 @@ jobs:
     - name: Install Typescript dependencies
       run: cd DotnetTemplate.Web && npm install && npm run build
     - name: Test with the dotnet CLI
-      run: dotnet test
+      run: dotnet test --no-build
     - name: Test with Jasmine
       run: cd DotnetTemplate.Web && npm t
     - name: Lint TypeScript
+      working-directory: ./DotnetTemplate.Web
       run: npm run lint
